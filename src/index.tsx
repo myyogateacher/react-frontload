@@ -415,6 +415,8 @@ export function useFrontload<T>(
     : undefined
   const error = !!data?._____FRONTLOAD_____isServerRenderError
 
+  const [forcedReload, setForcedReload] = React.useState<number>(0)
+  
   const [state, setState] = React.useState<{
     data: T
     frontloadMeta: FrontloadMeta
@@ -471,7 +473,7 @@ export function useFrontload<T>(
           })
         })
     }
-  }, []) // [] to only run once on mount
+  }, [forcedReload]) // [] to only run once on mount
 
   if (IS_SERVER) {
     // on server just collect frontloads for running at end of each render pass
@@ -486,5 +488,8 @@ export function useFrontload<T>(
         data: fn(state.data),
       }))
     },
+    reload: () => { // adding this
+      setForcedReload(state => state +1) 
+    }
   }
 }
