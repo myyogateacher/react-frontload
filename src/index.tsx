@@ -16,6 +16,7 @@ export type FrontloadProps<T> = {
   data: T
   frontloadMeta: FrontloadMeta
   setData: (fn: (data: T) => T) => void
+  reload: () => void
 }
 
 type FrontloadServerRenderFunction<T> = (args: { isFinalRender?: boolean }) => T
