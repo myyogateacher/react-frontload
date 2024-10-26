@@ -11,8 +11,7 @@
     "type": "git"
   },
 
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.tsx",
 
   "scripts": {
     "compile-ts": "tsc",
