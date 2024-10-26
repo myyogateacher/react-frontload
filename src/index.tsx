@@ -431,16 +431,8 @@ export function useFrontload<T>(
     },
   })
 
-  // on client run frontloads immediately as they are rendered
-  // with useEffect to guarantee it only runs once on mount
-  // it's fine to also run this code on the server, because there useEffect
-  // just does nothing. In fact we need to, because you can't have hooks
-  // behind conditionals without warnings from React
-  React.useEffect(() => {
-    if (state.frontloadMeta.serverRendered) {
-      if (frontloadState.isClientLoggingEnabled()) log(`${clientLogPrefix} ${key} | server rendered`) // prettier-ignore
-    } else {
-      let start = 0
+  const reloadData = () => {
+    let start = 0
       if (frontloadState.isClientLoggingEnabled()) {
         log(`${clientLogPrefix} component [${key}] - running frontload`)
         start = Date.now()
@@ -473,6 +465,18 @@ export function useFrontload<T>(
             },
           })
         })
+  }
+
+  // on client run frontloads immediately as they are rendered
+  // with useEffect to guarantee it only runs once on mount
+  // it's fine to also run this code on the server, because there useEffect
+  // just does nothing. In fact we need to, because you can't have hooks
+  // behind conditionals without warnings from React
+  React.useEffect(() => {
+    if (state.frontloadMeta.serverRendered && forcedReload == 0) {
+      if (frontloadState.isClientLoggingEnabled()) log(`${clientLogPrefix} ${key} | server rendered`) // prettier-ignore
+    } else {
+      reloadData()
     }
   }, [forcedReload]) // [] to only run once on mount
 
@@ -490,7 +494,7 @@ export function useFrontload<T>(
       }))
     },
     reload: () => { // adding this
-      setForcedReload(state => state +1) 
+      setForcedReload(forcedReload + 1) 
     }
   }
 }
